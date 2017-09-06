@@ -14,20 +14,25 @@ import sys
 from time import time
 sys.path.append("../tools/")
 from email_preprocess import preprocess
-
+from sklearn.naive_bayes import MultinomialNB
+import numpy as np
+import time
 
 ### features_train and features_test are the features for the training
 ### and testing datasets, respectively
 ### labels_train and labels_test are the corresponding item labels
 features_train, features_test, labels_train, labels_test = preprocess()
 
+clf = MultinomialNB()
+t  = time.time()
+clf.fit(features_train, labels_train)
+print('fitting time: %.4f' % (time.time() - t))
 
+t  = time.time()
+y_pred = clf.predict(features_test)
+print('prediction time: %.4f' % (time.time() - t))
 
+accuracy = 1 - np.abs(y_pred - labels_test).mean()
 
-#########################################################
-### your code goes here ###
-
-
-#########################################################
-
+print 'accuracy=%.4f' % accuracy
 
