@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+import numpy as np
 
 def outlierCleaner(predictions, ages, net_worths):
     """
@@ -13,8 +13,17 @@ def outlierCleaner(predictions, ages, net_worths):
     
     cleaned_data = []
 
-    ### your code goes here
+    from sklearn import linear_model
 
-    
+    reg = linear_model.LinearRegression()
+
+    error = np.ravel(np.abs(predictions - net_worths))
+    n_remove = np.ceil(len(predictions)/10)
+    index = np.argsort(error)[:-n_remove]
+    print(index)
+    for i in index:
+        print(i)
+        cleaned_data.append((ages[i, 0], net_worths[i, 0], error[i]))
+    print(cleaned_data)
     return cleaned_data
 
