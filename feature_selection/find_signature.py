@@ -38,6 +38,14 @@ labels_train   = labels_train[:150]
 
 
 ### your code goes here
+from sklearn import tree
 
+dt = tree.DecisionTreeClassifier()
+dt.fit(features_train, labels_train)
+
+acc_train = 1 - np.abs(dt.predict(features_train) - labels_train).mean()
+acc_test = 1 - np.abs(dt.predict(features_test) - labels_test).mean()
+
+print(acc_train, acc_test)
 
 
