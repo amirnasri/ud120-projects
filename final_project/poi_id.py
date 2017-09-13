@@ -32,8 +32,11 @@ labels, features = targetFeatureSplit(data)
 ### http://scikit-learn.org/stable/modules/pipeline.html
 
 # Provided to give you a starting point. Try a variety of classifiers.
-from sklearn.naive_bayes import GaussianNB
-clf = GaussianNB()
+from sklearn.naive_bayes import GaussianNB, BernoulliNB
+from sklearn import svm
+#clf = GaussianNB()
+#clf = BernoulliNB()
+clf = svm.SVC()
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 
 ### using our testing script. Check the tester.py script in the final project
@@ -46,6 +49,44 @@ clf = GaussianNB()
 from sklearn.cross_validation import train_test_split
 features_train, features_test, labels_train, labels_test = \
     train_test_split(features, labels, test_size=0.3, random_state=42)
+'''
+clf.fit(features_train, labels_train)
+pred = clf.predict(features_test)
+from sklearn.metrics import precision_score, recall_score, f1_score
+precision = precision_score(labels_test, pred)
+recall = recall_score(labels_test, pred)
+f1_score = f1_score(labels_test, pred)
+acc = clf.score(features_test, labels_test)
+'''
+from sklearn.cross_validation import StratifiedShuffleSplit
+import numpy as np
+
+labels = np.array(labels)
+features = np.array(features)
+n_splits = 1000
+sss = StratifiedShuffleSplit(y=labels, n_iter=n_splits, test_size=0.1)
+n_total = 0
+tp, tn, fp, fn = 0, 0, 0, 0
+for train_index, test_index in sss:
+    features_train, labels_train = features[train_index], labels[train_index]
+    features_test, labels_test = features[test_index], labels[test_index]
+
+    clf.fit(features_train, labels_train)
+    pred = clf.predict(features_test)
+
+    tp += np.sum((pred == 1) & (labels_test == 1))
+    tn += np.sum((pred == 0) & (labels_test == 0))
+    fp += np.sum((pred == 1) & (labels_test == 0))
+    fn += np.sum((pred == 0) & (labels_test == 1))
+    n_total += len(labels_test)
+
+acc = float(tp+tn)/n_total
+precision = float(tp)/(tp+fp)
+recall = float(tp)/(tp+fn)
+f1_score = 2 * precision*recall/(precision + recall)
+print('acc=%.4f precision=%.4f recall=%.4f f1=%.4f' % (acc, precision, recall, f1_score))
+
+
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
