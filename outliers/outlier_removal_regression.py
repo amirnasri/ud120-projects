@@ -89,3 +89,7 @@ if len(cleaned_data) > 0:
 else:
     print "outlierCleaner() is returning an empty list, no refitting to be done"
 
+
+print("score=%f" % reg.score(ages_test, net_worths_test))
+
+
